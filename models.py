@@ -170,8 +170,9 @@ def process_batch(batch):
     return [unprocess(t.decode('utf-8')) for t in predict_fn(batch)]
 
 def merge_results(batches, delims):
+  delims = delims[:len(batches)-1] + [""]
   outs = [p.replace(chr(8263)+" ", "<").replace(" <br> ", "<br>") + d for p, d in zip(batches, delims)]
-  return "".join(outs)[:-1]
+  return "".join(outs)
 
 def errant_process(origs, corrs, annotator):
   ori = annotator.parse(origs, tokenise=True)
