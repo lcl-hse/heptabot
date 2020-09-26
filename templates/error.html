@@ -1,0 +1,52 @@
+<html>
+<head>
+	<title>heptabot — Error</title>
+	<meta charset="utf-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="apple-touch-icon" sizes="180x180" href="./static/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="./static/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="./static/favicon-16x16.png">
+	<link rel="manifest" href="./static/site.webmanifest">
+	<link rel="mask-icon" href="./static/safari-pinned-tab.svg" color="#922490">
+	<link rel="shortcut icon" href="./static/favicon.ico">
+	<meta name="msapplication-TileColor" content="#ffc40d">
+	<meta name="msapplication-config" content="./static/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Mukta&family=PT+Sans&family=PT+Serif&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+	<link href="./static/error/style.css" rel="stylesheet">
+<meta charset="utf-8">
+</head>
+<body>
+<div class="mainwrap h-100 row align-items-center">
+	<div class="generalwrap" style="">
+	  <div id="title">Oops…</div>
+	  <div id="floater" class="col">
+	    <img id="floaterimg" src="./static/ouch.svg"></img>
+	  </div>
+	  <div class="col" id="pbwrapper">
+	    <div id="errorheader">
+		  {{ error_obj["header"] }}
+	    </div>
+	  </div>
+	  <div class="col col-10 offset-1">
+	    <div id="str1" class="foot">
+		  {{ error_obj["str1"] }}
+	    </div>
+		<div id="str2" class="foot">
+		  {{ error_obj["str2"] }}
+	    </div>
+	  </div>
+	  <div class="col" style="text-align: center;">
+		<a href="../" class="btn btn-danger" id="subm">Back</a>
+	  </div>
+	</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</body>
+</html>

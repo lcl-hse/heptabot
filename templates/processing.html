@@ -1,0 +1,65 @@
+<html>
+<head>
+	<title>heptabot — Processing</title>
+	<meta charset="utf-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="apple-touch-icon" sizes="180x180" href="./static/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="./static/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="./static/favicon-16x16.png">
+	<link rel="manifest" href="./static/site.webmanifest">
+	<link rel="mask-icon" href="./static/safari-pinned-tab.svg" color="#922490">
+	<link rel="shortcut icon" href="./static/favicon.ico">
+	<meta name="msapplication-TileColor" content="#ffc40d">
+	<meta name="msapplication-config" content="./static/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Mukta&family=PT+Sans&family=PT+Serif&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+	<link href="./static/processing/style.css" rel="stylesheet">
+	<script>
+	var source = new EventSource("/progress");
+	source.onmessage = function(event) {
+		var evals = event.data.split(" ");
+		$('.progress-bar').css('width', evals[0]+'%').attr('aria-valuenow', evals[0]);
+		$('#current').text(evals[1]);
+
+		if (parseInt(evals[0]) == 100){
+			source.close()
+		}
+	}
+	</script>
+</head>
+<body>
+<div id="upper">
+</div>
+<div class="mainwrap h-50 row align-items-center">
+	<div class="generalwrap" style="">
+	  <div id="floater" class="col">
+	    <img id="floaterimg" class="floating" src="./static/logo.svg"></img>
+	  </div>
+	  <div class="col" id="pbwrapper">
+		<div class="progress" id="pb">
+		  <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+		</div>
+	  </div>
+	  <div id="progresstext">
+		Processing: <div class="instr" id="current">0</div>/<div class="instr" id="total">{{ total }}</div>
+	  </div>
+	  <div class="col">
+	    <div id="jokes" class="jokes" style="display: none;">
+		  Congratulations, you've reached the secret level!
+	    </div>
+		<div class="jokes" style="visibility: hidden;">
+		  Brought to you by countless hours of listening to Kasabian
+	    </div>
+	  </div>
+	</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="./static/processing/engine.js"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</body>
+</html>

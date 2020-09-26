@@ -1,0 +1,10 @@
+errant==2.1.0
+torch==1.5.1
+numpy==1.16.1
+tensorflow-text
+google-api-python-client
+google-cloud-storage
+transformers==2.5.1
+errant==2.1.0
+catboost==0.24.1
+sentence_transformers==0.3.5.1
