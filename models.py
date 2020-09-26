@@ -428,13 +428,13 @@ def result_to_div(text, response_obj, delims, task_type):
   origs = text
   corrs = merge_results(response_obj, delims)
   res = corrs
-  if task_type == "correct":
+  if task_type == "correction":
     diff = diff_from_errant(*errant_process(origs, corrs, annotator))
     diff, errlist = merge_diff(diff)
     errors = [e[0] for e in errlist]
     corrections = [e[1] for e in errlist]
     classes = predict_error_class(errors=errors, corrections=corrections,
-                                  model=from_file, sentence_embedder=emb_model,
+                                  model=classifier, sentence_embedder=emb_model,
                                   tokenizer=word_tokenize)
     diff = groupify_diff(despacify_diff(diff))
     res = diff_prettyHtml(diff, classes)
