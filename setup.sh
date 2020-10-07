@@ -16,7 +16,7 @@ then
     echo "conda not foung, installing"
     wget -q --show-progress https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
-	~/miniconda/bin/conda initialize
+    ~/miniconda/bin/conda initialize
     echo "Now you should restart the terminal for the changes to take effect"
     echo "Either open a new terminal session or reconnect from within jupyter"
     exit 0
