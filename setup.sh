@@ -16,6 +16,10 @@ then
     echo "conda not foung, installing"
     wget -q --show-progress https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
+	~/miniconda/bin/conda initialize
+    echo "Now you should restart the terminal for the changes to take effect"
+    echo "Either open a new terminal session or reconnect from within jupyter"
+    exit 0
 fi
 echo
 
@@ -23,6 +27,7 @@ echo "Initializing virtual environment with python 3.6.9"
 conda install nb_conda
 conda create -n heptabot python=3.6.9
 source activate heptabot
+pip install -q --upgrade pip
 
 pyv="$(python -V 2>&1)"
 if [[ $pyv != *"3.6.9"* ]]
@@ -35,12 +40,17 @@ echo
 echo "Installing requirements"
 conda install -yq -c conda-forge --file conda_requirements.txt
 pip install -q -r requirements.txt
+pip install -q --upgrade pip
 echo
 
 echo "Setting up nltk and spaCy"
 python -c 'import nltk; nltk.download("punkt")'
 python -m spacy download -d en_core_web_sm-1.2.0
 python -m spacy link en_core_web_sm en
+echo
+
+echo "Setting up heptabot for jupyter (optional)"
+python -m ipykernel install --user --name=heptabot
 echo
 
 echo "Downloading models"

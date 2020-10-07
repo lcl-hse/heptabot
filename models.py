@@ -41,7 +41,10 @@ emb_model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 def load_predict_fn(model_path):
     sess = tf.compat.v1.Session()
     graph = tf.compat.v1.get_default_graph()
-    with tf.device('/cpu:0'):
+    dev_name = '/gpu:0'
+    if os.environ.get("MODEL_PLACE") == "cpu":
+        dev_name = '/cpu:0'
+    with tf.device(dev_name):
         tf.compat.v1.reset_default_graph()
         sess = tf.compat.v1.Session()
         meta_graph_def = tf.compat.v1.saved_model.load(sess, ["serve"], model_path)
