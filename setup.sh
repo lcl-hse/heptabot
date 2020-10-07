@@ -34,11 +34,11 @@ echo
 
 echo "Installing requirements"
 conda install -yq -c conda-forge --file conda_requirements.txt
-pip install -r requirements.txt
+pip install -q -r requirements.txt
 echo
 
 echo "Setting up nltk and spaCy"
-python -c 'import nltk; nltk.download("punkt")'.
+python -c 'import nltk; nltk.download("punkt")'
 python -m spacy download -d en_core_web_sm-1.2.0
 python -m spacy link en_core_web_sm en
 echo

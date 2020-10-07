@@ -1,5 +1,7 @@
 spacy==1.9.0
+tensorflow-gpu==2.0.0
 nltk
 pandas
 flask
 diff-match-patch
+python-Levenshtein
