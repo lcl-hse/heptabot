@@ -22,10 +22,10 @@ echo
 echo "Initializing virtual environment with python 3.6.9"
 conda install nb_conda
 conda create -n heptabot python=3.6.9
-conda activate heptabot
+source activate heptabot
 
 pyv="$(python -V 2>&1)"
-if [[ $pyv != "3.6.9" ]]
+if [[ $pyv != *"3.6.9"* ]]
 then
     echo "Python version is not 3.6.9, exiting"
     exit 3
