@@ -4,8 +4,6 @@ tensorflow-gpu==2.3.0
 tensorflow-text==2.3.0
 torch==1.5.1
 numpy==1.16.1
-google-api-python-client
-google-cloud-storage
 transformers==3.1.0
 catboost==0.24.1
 sentence_transformers==0.3.6
