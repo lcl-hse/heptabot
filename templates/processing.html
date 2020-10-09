@@ -21,13 +21,20 @@
 	var source = new EventSource("/progress");
 	source.onmessage = function(event) {
 		var evals = event.data.split(" ");
-		$('.progress-bar').css('width', evals[0]+'%').attr('aria-valuenow', evals[0]);
+		var perc = parseFloat(evals[1]) * 100 / parseFloat(evals[0])
+		$('.progress-bar').css('width', perc.toString()+'%').attr('aria-valuenow', perc.toString());
 		$('#current').text(evals[1]);
 
-		if (parseInt(evals[0]) == 100){
+		if (parseInt(evals[0]) == parseInt(evals[1])){
 			source.close()
 		}
 	}
+	</script>
+	<script>
+		function navigate() {
+			window.location.href = 'result';  // redirect when done!
+		}
+		fetch('slow').then(navigate); // load the slow url then navigate
 	</script>
 </head>
 <body>

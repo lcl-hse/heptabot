@@ -63,7 +63,7 @@ def preprocess(instr):
     return instr
 
 def unprocess(instr):
-    instr = instr.replace(chr(8263)+" ", "<").replace(" <br> ", "\n")
+    instr = re.sub(r" +<br> ?", r"\n", instr.replace(chr(8263)+" ", "<"))
     return instr
 
 def parsify(sent, replace_tab=True):
@@ -137,7 +137,7 @@ def batchify_text(text, max_tokens=510):
     orig_len = orig_ntokens[i]
     delim = delims[i]
     if curlen + orig_len > max_tokens:
-      orig.append(t5ify(cur_or[:-1]))
+      orig.append(t5ify(cur_or))
       new_delims.append(delim)
       cur_or = orig_parrs[i]
     else:
@@ -173,7 +173,7 @@ def process_batch(batch):
     return [unprocess(t.decode('utf-8')) for t in predict_fn(batch)]
 
 def merge_results(batches, delims):
-  delims = delims[:len(batches)-1] + [""]
+  delims = delims[:len(delims)-1] + [""]
   outs = [p.replace(chr(8263)+" ", "<").replace(" <br> ", "<br>") + d for p, d in zip(batches, delims)]
   return "".join(outs)
 
@@ -429,7 +429,7 @@ def diff_prettyHtml(diff, classes):
   return "".join(html)
 
 def result_to_div(text, response_obj, delims, task_type):
-  origs = text
+  origs = re.sub(r"([\s\n\t])+", r"\g<1>", text)
   corrs = merge_results(response_obj, delims)
   res = corrs
   if task_type == "correction":

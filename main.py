@@ -1,7 +1,7 @@
 import os
 import time
 
-from flask import Flask, Markup, Response, request, stream_with_context, redirect, url_for, render_template
+from flask import Flask, Markup, Response, request, stream_with_context, redirect, url_for, render_template, jsonify
 from werkzeug.exceptions import HTTPException
 
 from models import batchify, process_batch, result_to_div
@@ -10,31 +10,6 @@ class InputOverflow(Exception):
     """Error for exceptionally massive requests."""
     pass
 
-def page_generator(request):
-    global batches, processed
-    text = request.form['text']
-    task_type = request.form['task-type']
-    
-    with open("generated.txt", "w", encoding="utf-8") as infile:
-        infile.write(text)
-    
-    processed = []
-    batches, delims = batchify(text, task_type)
-    
-    if len(batches) > 50:
-        raise InputOverflow(task_type)
-    
-    yield render_template('processing.html', total=str(len(batches)))
-    
-    for batch in batches:
-        processed.append(process_batch(batch))
-    
-    plist = [item for subl in processed for item in subl] 
-    response = Markup(result_to_div(text, plist, delims, task_type))
-    
-    yield redirect(url_for('result'), response=response, task=task_type)
-
-generator_obj = None
 
 app = Flask(__name__)
 
@@ -44,11 +19,35 @@ def index():
 
 @app.route('/heptabot', methods=['GET', 'POST'])
 def heptabot():
-    global generator_obj
+    global batches, delims, processed, text, task_type
+    
     if request.method == 'POST':
-        generator_obj = generator_obj or page_generator(request)
-        return Response(stream_with_context(next(generator_obj)))
+        text = request.form['text']
+        task_type = request.form['task-type']
+        
+        with open("generated.txt", "w", encoding="utf-8") as infile:
+            infile.write(text)
+        
+        processed = []
+        batches, delims = batchify(text, task_type)
+        
+        if len(batches) > 50:
+            raise InputOverflow(task_type)
+        
+        return render_template('processing.html', total=str(len(batches)))
     return render_template('index.html')
+
+@app.route('/slow')
+def slow():
+    global batches, delims, processed, text, task_type, response
+    
+    for batch in batches:
+        processed.append(process_batch(batch))
+    
+    plist = [item for subl in processed for item in subl] 
+    response = Markup(result_to_div(text, plist, delims, task_type))
+    
+    return jsonify("Done.")
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -78,11 +77,12 @@ def progress():
     def generate():
         global batches, processed
         current = len(processed)
-        percentage = len(processed) / len(batches)
-        while x <= 100.0:
-            yield "data:" + str(percentage) + " " +  str(current) + "\n\n"
-            x = x + 10
-            time.sleep(0.05)
+        num_batches = len(batches)
+        while current != num_batches:
+            current = len(processed)
+            num_batches = len(batches)
+            yield "data:" + str(num_batches) + " " +  str(current) + "\n\n"
+            time.sleep(0.1)
     return Response(generate(), mimetype='text/event-stream')
 
 @app.route('/download')
@@ -91,11 +91,13 @@ def downloadFile():
     return send_file(path, as_attachment=True)
 
 @app.route('/result')
-def result(response, task):
-    task_type = "text" if task == "correction" else "sentences"
-    which_font = "" if task == "correction" else "font-family: Ubuntu Mono;"
-    return render_template('result.html', response=response, task_type=task_type, which_font=which_font)
+def result():
+    global task_type, response
+    task = "text" if task_type == "correction" else "sentences"
+    which_font = "" if task_type == "correction" else "font-family: Ubuntu Mono;"
+    return render_template('result.html', response=response, task_type=task, which_font=which_font)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port="8080")
+
