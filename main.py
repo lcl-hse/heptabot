@@ -94,7 +94,7 @@ def downloadFile():
 def result():
     global task_type, response
     task = "text" if task_type == "correction" else "sentences"
-    which_font = "" if task_type == "correction" else "font-family: Ubuntu Mono;"
+    which_font = "" if task_type == "correction" else "font-family: Ubuntu Mono; letter-spacing: -0.5px;"
     return render_template('result.html', response=response, task_type=task, which_font=which_font)
 
 
