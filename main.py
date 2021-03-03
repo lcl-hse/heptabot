@@ -58,7 +58,7 @@ def slow():
     response = Markup(result_to_div(text, plist, delims, task_type))
     
     secret_token = secrets.token_hex(16)
-    return jsonify(secret_token)
+    return secret_token
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -79,7 +79,7 @@ def handle_exception(e):
     elif isinstance(e, SecretTokenError):
         error_obj["header"] = "Secret connection error has occurred."
         error_obj["str1"] = "We exchange secret tokens so that the output could be viewed only by those who submitted the text. Seems like the tokens mismatched somehow."
-        error_obj["str2"] = Markup('If you think this should\'t have happened, you can report the error via our <a href="https://forms.gle/RpFdgLN92L4KQ3DMA">Google Form</a>.')
+        error_obj["str2"] = Markup('If you think this shouldn\'t have happened, you can report the error via our <a href="https://forms.gle/RpFdgLN92L4KQ3DMA">Google Form</a>.')
 
     else:
         error_obj["header"] = "Seems like a runtime error has occurred. Here's the info:"
@@ -106,10 +106,12 @@ def downloadFile():
     path = "generated.txt"
     return send_file(path, as_attachment=True)
 
-@app.route('/result', methods=['POST'])
+@app.route('/result', methods=['GET', 'POST'])
 def result():
     global task_type, response, secret_token
-    if request.form['token'] != secret_token
+    if request.method == 'GET':
+        raise SecretTokenError()
+    if str(request.form['token']) != secret_token:
         raise SecretTokenError()
     task = "text" if task_type == "correction" else "sentences"
     which_font = "" if task_type == "correction" else "font-family: Ubuntu Mono; letter-spacing: -0.5px;"
