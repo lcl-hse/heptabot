@@ -44,5 +44,5 @@ wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-
 echo
 
 echo "heptabot is ready to use!"
-echo "run start.sh to activate the system"
+echo "run conda init; conda activate heptabot; ./start.sh to activate the system"
 exit 0
