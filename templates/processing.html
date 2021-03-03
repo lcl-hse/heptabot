@@ -17,6 +17,7 @@
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 	<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Mukta&family=PT+Sans&family=PT+Serif&family=Ubuntu+Mono&display=swap" rel="stylesheet">
 	<link href="./static/processing/style.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script>
 	var source = new EventSource("/progress");
 	source.onmessage = function(event) {
@@ -31,10 +32,14 @@
 	}
 	</script>
 	<script>
-		function navigate() {
-			window.location.href = 'result';  // redirect when done!
-		}
-		fetch('slow').then(navigate); // load the slow url then navigate
+		fetch('slow')
+		.then((response) => {
+		    return response.text();
+		})
+		.then((data) => {
+		    $("#token").val(data);
+		    $("#form").submit();
+		});
 	</script>
 </head>
 <body>
@@ -63,8 +68,10 @@
 	  </div>
 	</div>
 </div>
+<form style="display: none" action="/result" method="POST" id="form">
+  <input type="hidden" id="token" name="token" value=""/>
+</form>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="./static/processing/engine.js"></script>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
