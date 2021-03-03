@@ -5,7 +5,8 @@ echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob
 echo "Initializing virtual environment with python 3.6.9"
 mamba install nb_conda -yq -c conda-forge
 mamba create -q -n heptabot python=3.6.9
-source activate heptabot
+source ~/mambaforge/etc/profile.d/conda.sh
+conda activate heptabot
 pip install -q --upgrade pip
 
 pyv="$(python -V 2>&1)"
