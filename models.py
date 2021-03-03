@@ -5,6 +5,7 @@ import errant
 import torch
 import spacy
 import tensorflow_text
+import Pyro4
 
 import numpy as np
 import pandas as pd
@@ -19,6 +20,20 @@ from catboost import CatBoostClassifier
 from sentence_transformers import SentenceTransformer
 from transformers import T5Tokenizer
 
+@Pyro4.expose
+@Pyro4.behavior(instance_mode="single")
+class Heptabot(object):
+    def __init__(self):
+        pass
+
+    def batchify(self, *args, **kwargs):
+        batchify(*args, **kwargs)
+
+    def process_batch(self, *args, **kwargs):
+        process_batch(*args, **kwargs)
+
+    def result_to_div(self, *args, **kwargs):
+        result_to_div(*args, **kwargs)
 
 @contextmanager
 def suppress_stdout_stderr():
@@ -442,3 +457,13 @@ def result_to_div(text, response_obj, delims, task_type):
     diff = groupify_diff(despacify_diff(diff))
     res = diff_prettyHtml(diff, classes)
   return res
+
+def main():
+    Pyro4.Daemon.serveSimple(
+            {
+                Heptabot: "heptabot.heptamodel"
+            },
+            ns = True)
+
+if __name__=="__main__":
+    main()

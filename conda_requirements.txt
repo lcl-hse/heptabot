@@ -5,3 +5,4 @@ pandas
 flask
 diff-match-patch
 python-Levenshtein
+Pyro4

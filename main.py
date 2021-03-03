@@ -1,15 +1,20 @@
 import os
+import sys
 import time
+import Pyro4
+import Pyro4.util
 
 from flask import Flask, Markup, Response, request, stream_with_context, redirect, url_for, render_template, jsonify
 from werkzeug.exceptions import HTTPException
 
-from models import batchify, process_batch, result_to_div
 
 class InputOverflow(Exception):
     """Error for exceptionally massive requests."""
     pass
 
+sys.excepthook = Pyro4.util.excepthook
+Heptamodel = Pyro4.Proxy("PYRONAME:heptabot.heptamodel")
+batchify, process_batch, result_to_div = Heptamodel.batchify, Heptamodel.process_batch, Heptamodel.result_to_div
 
 app = Flask(__name__)
 
