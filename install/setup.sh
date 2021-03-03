@@ -1,36 +1,10 @@
-echo "This script needs conda, so it will install miniconda if conda is not found."
-echo "It requires wget and Python 3."
-echo "It will also initialize a new virtual environment and download all the necessary files."
-read -p "Enter 'y' to proceed with heptabot setup: " -n 1 -r
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    echo "Terminating on user request"
-	[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
-fi
-echo
-
-echo "Checking conda installation"
-cv=`which conda`
-if [[ $cv == "" ]]
-then
-    echo "conda not foung, installing"
-    wget -q --show-progress https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
-    ~/miniconda/bin/conda init
-    cpath=`realpath  ~/miniconda/bin/conda`
-    export PATH="$cpath:$PATH"
-    PPATH="$(echo '/opt/conda/bin' | sed 's/\//\\\//g')"
-    CPATH="$(realpath  ~/miniconda/bin | sed 's/\//\\\//g')"
-    sed -i "s/$PPATH/$CPATH:$PPATH/g" ~/.bashrc
-    echo "Now you should restart the terminal for the changes to take effect"
-    echo "Either open a new terminal session or reconnect from within jupyter"
-    exit 0
-fi
-echo
+echo "This script sets up a new 'heptabot' virtual environment and downloads all the necessary files."
+echo "It depends on mamba, git and wget."
+echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob/master/notebooks/Install.ipynb notebook to avoid any unexpected problems."
 
 echo "Initializing virtual environment with python 3.6.9"
-conda install nb_conda
-conda create -n heptabot python=3.6.9
+mamba install nb_conda -yq -c conda-forge
+mamba create -q -n heptabot python=3.6.9
 source activate heptabot
 pip install -q --upgrade pip
 
@@ -43,7 +17,7 @@ fi
 echo
 
 echo "Installing requirements"
-conda install -yq -c conda-forge --file conda_requirements.txt
+mamba install -yq -c conda-forge --file conda_requirements.txt
 pip install -q -r requirements.txt
 pip install -q --upgrade pip
 echo
@@ -69,5 +43,5 @@ wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-
 echo
 
 echo "heptabot is ready to use!"
-echo "run python main.py to activate the system"
+echo "run start.sh to activate the system"
 exit 0
