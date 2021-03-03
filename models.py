@@ -27,13 +27,13 @@ class Heptabot(object):
         pass
 
     def batchify(self, *args, **kwargs):
-        batchify(*args, **kwargs)
+        return batchify(*args, **kwargs)
 
     def process_batch(self, *args, **kwargs):
-        process_batch(*args, **kwargs)
+        return process_batch(*args, **kwargs)
 
     def result_to_div(self, *args, **kwargs):
-        result_to_div(*args, **kwargs)
+        return result_to_div(*args, **kwargs)
 
 @contextmanager
 def suppress_stdout_stderr():
