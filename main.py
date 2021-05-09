@@ -14,7 +14,7 @@ class InputOverflow(Exception):
     pass
 
 class SecretTokenError(Exception):
-    """Error for cases when secret tokens mismatch"""
+    """Error for cases when secret tokens mismatch."""
     pass
 
 sys.excepthook = Pyro4.util.excepthook
