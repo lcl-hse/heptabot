@@ -74,7 +74,7 @@ def handle_exception(e):
         else:
             error_obj["header"] = "It seems that your entry has more than 100 sentences."
         error_obj["str1"] = "In order to maintain server resources and stable uptime, we limit the amounts of data that can be processed via our Web interface."
-        error_obj["str2"] = Markup('You can process your data in our <a href="https://colab.research.google.com/github/lcl-hse/heptabot/blob/master/notebooks/Use_in_Colab.ipynb">Colab notebook</a> instead. <a href="/download">Click here</a> to download your data.')
+        error_obj["str2"] = Markup('You can process your data in our <a href="https://colab.research.google.com/github/lcl-hse/heptabot/blob/tensorflow/notebooks/Use_in_Colab.ipynb">Colab notebook</a> instead. <a href="/download">Click here</a> to download your data.')
 
     elif isinstance(e, SecretTokenError):
         error_obj["header"] = "Secret connection error has occurred."

@@ -1,6 +1,6 @@
 echo "This script sets up a new 'heptabot' virtual environment and downloads all the necessary files."
 echo "It depends on mamba, git and wget."
-echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob/master/notebooks/Install.ipynb notebook to avoid any unexpected problems."
+echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob/tensorflow/notebooks/Install.ipynb notebook to avoid any unexpected problems."
 
 echo "Initializing virtual environment with python 3.6.9"
 mamba install nb_conda -yq -c conda-forge

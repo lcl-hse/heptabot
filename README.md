@@ -1,4 +1,4 @@
-<p align="center"> <a href="https://lcl-correct.it"><img height="125" src="./assets/heptabot_logo.svg" alt="heptabot logo"></a> </p>
+<p align="center"> <a href="https://lcl-correct.it"><img height="100" src="./assets/heptabot_logo.svg" alt="heptabot logo"></a> </p>
 
 # heptabot – a deep learning text corrector
 Powered by [Text-To-Text Transfer Transformer](https://github.com/google-research/text-to-text-transfer-transformer) model, `heptabot` is designed and built to be a practical example of a powerful user-friendly open-source error correction engine based on cutting-edge technology.
@@ -24,15 +24,15 @@ The performance of current `heptabot` *Web* version measures as follows:
 The `Web` model of `heptabot` is available at [https://lcl-correct.it/](https://lcl-correct.it/).
 
 ## Install
-`heptabot` is designed such that everyone could deploy it. We recommend to follow the [Install](https://github.com/lcl-hse/heptabot/blob/master/notebooks/Install.ipynb) notebook. Check if your system meets the requirements (has GPU installed and has enough resources to meet the requirements described in the **Description** section), then install `jupyterlab` (or `jupyter`) and download the notebook using the following commands:
+`heptabot` is designed such that everyone could deploy it. We recommend to follow the [Install](https://github.com/lcl-hse/heptabot/blob/tensorflow/notebooks/Install.ipynb) notebook. Check if your system meets the requirements (has GPU installed and has enough resources to meet the requirements described in the **Description** section), then install `jupyterlab` (or `jupyter`) and download the notebook using the following commands:
 ```sh
 pip install jupyterlab
-curl -L "https://github.com/lcl-hse/heptabot/raw/master/notebooks/Install.ipynb" -o Install.ipynb
+curl -L "https://github.com/lcl-hse/heptabot/raw/tensorflow/notebooks/Install.ipynb" -o Install.ipynb
 ```
 After that, launch Jupyter (`jupyter lab --ip=127.0.0.1 --port=8080 --allow-root`) and follow the instructions in the notebook you've just downloaded.
 
 ## Reproduce
-Feel free to reproduce our research: to do so, follow the notebooks from the [retrain](https://github.com/lcl-hse/heptabot/blob/master/retrain/) folder. Please note that you have to get access to some of the datasets we used before obtaining them, so this portion of code is omitted.
+Feel free to reproduce our research: to do so, follow the notebooks from the [retrain](https://github.com/lcl-hse/heptabot/blob/tensorflow/retrain/) folder. Please note that you have to get access to some of the datasets we used before obtaining them, so this portion of code is omitted.
 
 ## Contact us
 In case you have any questions or suggestions regarding `heptabot` or our research, feel free to contact us at [itorubarov@hse.ru](mailto:itorubarov@hse.ru).
