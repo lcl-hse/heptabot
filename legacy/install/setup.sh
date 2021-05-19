@@ -1,6 +1,6 @@
 echo "This script sets up a new 'heptabot' virtual environment and downloads all the necessary files."
-echo "It depends on mamba, git and wget."
-echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob/master/notebooks/Install.ipynb notebook to avoid any unexpected problems."
+echo "It depends on mamba, gcc, git and wget."
+echo "We strongly suggest following the https://github.com/lcl-hse/heptabot/blob/pytorch/notebooks/Install.ipynb notebook to avoid any unexpected problems."
 
 echo "Initializing virtual environment with python 3.6.9"
 mamba install nb_conda -yq -c conda-forge
@@ -29,8 +29,11 @@ python -m spacy download -d en_core_web_sm-1.2.0
 python -m spacy link en_core_web_sm en
 echo
 
-echo "Setting up heptabot for jupyter (optional)"
-python -m ipykernel install --user --name=heptabot
+echo "Setting up heptabot for jupyter"
+HPATH="$(realpath  ~/mambaforge/envs/heptabot)"
+conda config --append envs_dirs $HPATH
+ipython kernel install --user --name heptabot
+echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'$HPATH'/lib:/opt/conda/lib' >> ~/.bashrc
 echo
 
 echo "Downloading models"

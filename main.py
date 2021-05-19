@@ -54,8 +54,7 @@ def slow():
     for batch in batches:
         processed.append(process_batch(batch))
     
-    plist = [item for subl in processed for item in subl] 
-    response = Markup(result_to_div(text, plist, delims, task_type))
+    response = Markup(result_to_div(text, processed, delims, task_type))
     
     secret_token = secrets.token_hex(16)
     return secret_token
@@ -74,7 +73,7 @@ def handle_exception(e):
         else:
             error_obj["header"] = "It seems that your entry has more than 100 sentences."
         error_obj["str1"] = "In order to maintain server resources and stable uptime, we limit the amounts of data that can be processed via our Web interface."
-        error_obj["str2"] = Markup('You can process your data in our <a href="https://colab.research.google.com/github/lcl-hse/heptabot/blob/master/notebooks/Use_in_Colab.ipynb">Colab notebook</a> instead. <a href="/download">Click here</a> to download your data.')
+        error_obj["str2"] = Markup('You can process your data in our <a href="https://colab.research.google.com/github/lcl-hse/heptabot/blob/pytorch/notebooks/Use_in_Colab.ipynb">Colab notebook</a> instead. <a href="/download">Click here</a> to download your data.')
 
     elif isinstance(e, SecretTokenError):
         error_obj["header"] = "Secret connection error has occurred."
