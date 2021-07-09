@@ -50,7 +50,7 @@ nlp = spacy.load("en")
 annotator = errant.load('en')
 
 classifier = CatBoostClassifier()
-classifier.load_model("./models/err_type_classifier.cbm")
+classifier.load_model("./models/classifier/err_type_classifier.cbm")
 
 tokenizer = T5Tokenizer.from_pretrained('./models/t5-tokenizer')
 emb_model = SentenceTransformer('./models/distilbert_stsb_model')

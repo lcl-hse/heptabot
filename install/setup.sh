@@ -36,7 +36,9 @@ echo
 echo "Downloading models"
 mkdir ./models
 wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
-tar -xzvf ./models/distilbert_stsb_model.tar.gz -C ./models
+tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+mkdir ./models/classifier
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/classifier/err_type_classifier.cbm -P ./models/classifier
 mkdir ./models/t5-tokenizer
 wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/external/sentencepiece.model -P ./models/t5-tokenizer
 mv ./models/t5-tokenizer/sentencepiece.model ./models/t5-tokenizer/spiece.model
