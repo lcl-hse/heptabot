@@ -52,8 +52,8 @@ annotator = errant.load('en')
 classifier = CatBoostClassifier()
 classifier.load_model("./models/err_type_classifier.cbm")
 
-tokenizer = T5Tokenizer.from_pretrained('t5-base')
-emb_model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
+tokenizer = T5Tokenizer.from_pretrained('./models/t5-tokenizer')
+emb_model = SentenceTransformer('./models/distilbert_stsb_model')
 
 
 def load_predict_fn(model_path):
@@ -72,8 +72,8 @@ def load_predict_fn(model_path):
             feed_dict={signature_def.inputs["input"].name: x}
         )
 
-
-predict_fn = load_predict_fn(b"models/savemodel")
+if os.environ.get("MODEL_PLACE") != "tpu":
+    predict_fn = load_predict_fn(b"models/savemodel")
 
 
 def preprocess(instr):
