@@ -112,11 +112,11 @@ RUN python -m spacy link en_core_web_sm en
 
 # Download models
 
-RUN wget -q https://storage.googleapis.com/isikus/heptabot/models/external/err_type_classifier.cbm -P ./models
-RUN wget -q https://storage.googleapis.com/isikus/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
-RUN tar -xzvf ./models/distilbert_stsb_model.tar.gz -C ./models
-RUN wget -q https://storage.googleapis.com/isikus/heptabot/models/tiny/cpu/t5_tiny_model.tar.gz -P ./models
-RUN tar -xzvf ./models/t5_tiny_model.tar.gz -C ./models
+RUN wget -q https://storage.googleapis.com/heptabot/models/external/err_type_classifier.cbm -P ./models
+RUN wget -q https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
+RUN tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+RUN wget -q https://storage.googleapis.com/heptabot/models/tiny/cpu/t5_tiny_model.tar.gz -P ./models
+RUN tar -xzf ./models/t5_tiny_model.tar.gz -C ./models
 
 RUN rm -rf /var/lib/apt/lists/* /tmp/*
 
