@@ -72,12 +72,13 @@ classifier.load_model("./models/err_type_classifier.cbm")
 emb_model = SentenceTransformer('./models/distilbert_stsb_model')
 
 tokenizer = T5TokenizerFast.from_pretrained("./models/T5-small_distilled")
-tinymodel = T5ForConditionalGeneration.from_pretrained("./models/T5-small_distilled")
+if os.environ.get("MODEL_PLACE") != "tpu":
+    tinymodel = T5ForConditionalGeneration.from_pretrained("./models/T5-small_distilled")
 
-tinymodel.to(device)
-emb_model.to(device)
+    emb_model.to(device)
+    tinymodel.to(device)
 
-create_inference_fn()
+    create_inference_fn()
 
 
 def parsify(sent, replace_tab=True):

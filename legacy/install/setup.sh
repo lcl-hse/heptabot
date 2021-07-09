@@ -37,13 +37,19 @@ echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'$HPATH'/lib:/opt/conda/lib' >> ~/.bashrc
 echo
 
 echo "Downloading models"
-wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/cbmodel/err_type_classifier.cbm -P ./models
+mkdir ./models
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
+tar -xzvf ./models/distilbert_stsb_model.tar.gz -C ./models
+mkdir ./models/t5-tokenizer
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/external/sentencepiece.model -P ./models/t5-tokenizer
+mv ./models/t5-tokenizer/sentencepiece.model ./models/t5-tokenizer/spiece.model
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/external/tokenizer.json -P ./models/t5-tokenizer
 mkdir ./models/savemodel
-wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-model/models/base-basedrei/export/1599625548/saved_model.pb -P ./models/savemodel
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/medium/gpu/saved_model.pb -P ./models/savemodel
 mkdir ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-model/models/base-basedrei/export/1599625548/variables/variables.data-00000-of-00002 -P ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-model/models/base-basedrei/export/1599625548/variables/variables.data-00001-of-00002 -P ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/ml-bucket-isikus/t5-base-model/models/base-basedrei/export/1599625548/variables/variables.index -P ./models/savemodel/variables
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/medium/gpu/variables/variables.data-00000-of-00002 -P ./models/savemodel/variables
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/medium/gpu/variables/variables.data-00001-of-00002 -P ./models/savemodel/variables
+wget -q --show-progress https://storage.googleapis.com/isikus/heptabot/models/medium/gpu/variables/variables.index -P ./models/savemodel/variables
 echo
 
 echo "heptabot is ready to use!"
