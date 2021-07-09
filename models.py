@@ -165,7 +165,6 @@ def batchify_text(text, max_tokens=250):
         cur_or = cur_or[:-len(new_delims[-1])]
     orig.append(t5ify(cur_or))
 
-    print(orig, new_delims)
     return orig, new_delims
 
 
