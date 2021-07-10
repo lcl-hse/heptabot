@@ -3,7 +3,7 @@ TPU_NAME="grpc://"$TPU_IP
 
 DIR=$(python -c "import os; print(os.path.realpath('.'))")
 DATA_DIR=$DIR
-MODEL_DIR="gs://heptabot/models/medium/tpu"
+MODEL_DIR="gs://heptabot/models/"$HPT_MODEL_TYPE"/tpu"
 
 #CHECKPOINT_STEP
 #TPU_TOPOLOGY

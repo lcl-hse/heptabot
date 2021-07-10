@@ -1,5 +1,5 @@
 echo "Initializing virtual environment with python 3.6.9"
-mamba create -q -n heptabot python=3.6.9
+mamba create -yq -n heptabot python=3.6.9
 source activate heptabot
 pip install -q --upgrade pip
 
