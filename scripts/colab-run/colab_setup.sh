@@ -1,5 +1,5 @@
 echo "Initializing virtual environment with python 3.6.9"
-mamba create -q -n heptabot python=3.6.9
+mamba create -yq -n heptabot python=3.6.9
 source activate heptabot
 pip install -q --upgrade pip
 
@@ -24,19 +24,14 @@ python -m spacy link en_core_web_sm en
 echo
 
 echo "Downloading models"
-mkdir ./models
+mkdir models
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
-tar -xzvf ./models/distilbert_stsb_model.tar.gz -C ./models
-mkdir ./models/t5-tokenizer
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/external/sentencepiece.model -P ./models/t5-tokenizer
-mv ./models/t5-tokenizer/sentencepiece.model ./models/t5-tokenizer/spiece.model
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/external/tokenizer.json -P ./models/t5-tokenizer
-mkdir ./models/savemodel
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/medium/gpu/saved_model.pb -P ./models/savemodel
-mkdir ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/medium/gpu/variables/variables.data-00000-of-00002 -P ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/medium/gpu/variables/variables.data-00001-of-00002 -P ./models/savemodel/variables
-wget -q --show-progress https://storage.googleapis.com/heptabot/models/medium/gpu/variables/variables.index -P ./models/savemodel/variables
+tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+mkdir ./models/classifier
+wget -q --show-progress https://storage.googleapis.com/heptabot/models/classifier/err_type_classifier.cbm -P ./models/classifier
+tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+wget -q --show-progress https://storage.googleapis.com/heptabot/models/tiny/cpu/t5_tiny_model.tar.gz -P ./models
+tar -xzf ./models/t5_tiny_model.tar.gz -C ./models
 echo
 
 echo "heptabot is ready to use!"

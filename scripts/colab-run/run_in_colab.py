@@ -35,8 +35,7 @@ for textid in tqdm(prepared_data):
     else:
         for batch in batches:
             processed.append(process_batch(batch))
-    plist = [item for subl in processed for item in subl] 
-    response = result_to_div(texts[textid], plist, delims, task_type)
+    response = result_to_div(texts[textid], processed, delims, task_type)
     
     proc_html = outhtml.format(which_font, response, task_str)
     with open(os.path.join("output", textid+".html"), "w", encoding="utf-8") as outfile:
