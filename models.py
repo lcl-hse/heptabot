@@ -194,6 +194,101 @@ def process_batch(batch):
     return [unprocess(t.decode('utf-8')) for t in predict_fn(batch)]
 
 
+def spare_spaces(indel, inins):
+  if indel is not None:
+    ds = re.search(r"^(\s*)(.*?)(\s*)$", indel)
+    outdel = ds.group(2)
+    add_before = len(ds.group(1))
+    add_after = len(ds.group(3))
+  else:
+    outdel, add_before, add_after = None, 0, 0
+  if inins is not None:
+    di = re.search(r"^(\s*)(.*?)(\s*)$", inins)
+    outins = di.group(2)
+  else:
+    outins = None
+  return outdel, outins, add_before, add_after
+
+
+def diff_to_ann(diff, classes, original_ann=None):
+  if original_ann is not None:
+    with open(original_ann, "r") as inann:
+      _tdict = {"T": 0, "A": 0, "#": 0}
+      for line in [l for l in inann.read().split("\n") if l]:
+        s = re.search(r"^([TA#])([0-9]+)\s", line)
+        if s:
+          _type = s.group(1)
+          _id = int(s.group(2))
+          if _id > _tdict[_type]:
+            _tdict[_type] = _id
+  else:
+    T, A, DASH = 0, 0, 0
+
+  class_dict = {
+      0: "comp",
+      1: "disc",
+      2: "punct",
+      3: "spell",
+      4: "vocab",
+      5: "gram"
+  }
+
+  ANNS = []
+  pos = 0
+  _cid = 0
+
+  for k, elem in enumerate(diff):
+    mode, change = elem
+    if mode == 0:
+      pos += len(change[0][1])
+    else:
+      if len(change) == 2:
+        d, i = change[0], change[1]
+        if d[0] == 1 and i[0] == -1:
+          d, i = i, d
+        outdel, outins, add_before, add_after = spare_spaces(d[1], i[1])
+        pos += add_before
+        ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
+        ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
+        pos += len(outdel) + add_after
+        T += 1
+        DASH += 1
+      else:
+        m, ch = change[0]
+        if m == -1:
+          outdel, _, add_before, add_after = spare_spaces(ch, None)
+          pos += add_before
+          ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
+          ANNS.append("A{}\tDelete T{}".format(A+1, T+1))
+          pos += len(outdel) + add_after
+          T += 1
+          A += 1
+        else:
+          _, outins, _, _ = spare_spaces(None, ch)
+          if pos == 0:
+            rs = re.search(r"^(\s*)([-'\w]+)", diff[1][1][0][1])
+            add_before = len(rs.group(1))
+            pseudodel = rs.group(2)
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], add_before, add_before+len(pseudodel), pseudodel))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
+            T += 1
+            DASH += 1
+          else:
+            rs = re.search(r"([-'\w]+)([^-'\w\s]*)(\s*)$", diff[k-1][1][0][1])
+            pseudodel = rs.group(1)
+            punct = rs.group(2)
+            len_diff = len(diff[k-1][1][0][1])
+            len_punct = len(punct)
+            add_after = len(rs.group(3))
+            add_before = len_diff - len(pseudodel) - len_punct - add_after
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos + add_before, pos + len_diff - add_after, pseudodel + punct))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
+            T += 1
+            DASH += 1
+      _cid += 1
+  return "\n".join(ANNS)
+
+
 def merge_results(batches, delims):
     delims = delims[:len(delims) - 1] + [""]
     outs = [p.replace(chr(8263) + " ", "<").replace(" <br> ", "<br>") + d for p, d in zip(batches, delims)]
@@ -457,10 +552,14 @@ def diff_prettyHtml(diff, classes):
     return "".join(html)
 
 
-def result_to_div(text, response_obj, delims, task_type):
-    origs = re.sub(r"([\s\n\t])+", r"\g<1>", text)
+def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, original_ann=None):
+    if maybe_to_ann:
+        origs = re.sub(r"[\n\t]", " ", text)
+    else:
+        origs = re.sub(r"(\s)+", r"\g<1>", text)
     corrs = merge_results(response_obj, delims)
-    res = corrs
+    if maybe_to_ann:
+        corrs = re.sub(r"[\n\t]", " ", corrs)
     if task_type == "correction":
         diff = diff_from_errant(*errant_process(origs, corrs, annotator))
         diff, errlist = merge_diff(diff)
@@ -470,7 +569,10 @@ def result_to_div(text, response_obj, delims, task_type):
                                       model=classifier, sentence_embedder=emb_model,
                                       tokenizer=word_tokenize)
         diff = groupify_diff(despacify_diff(diff))
-        res = diff_prettyHtml(diff, classes)
+        if maybe_to_ann:
+            res = diff_to_ann(diff, classes, original_ann=original_ann)
+        else:
+            res = diff_prettyHtml(diff, classes)
     return res
 
 
