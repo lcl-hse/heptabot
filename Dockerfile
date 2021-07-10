@@ -83,11 +83,6 @@ RUN set -xe && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean --all -f -y
 
-# Install required UNIX programs
-RUN apt-get -yqq update
-RUN apt-get -yqq install git wget gcc && \
-        apt-get -yqq clean
-
 # Copy repo files to working directory and mark it as such
 COPY . /root
 WORKDIR /root
@@ -97,21 +92,20 @@ RUN mamba create -y -q -n heptabot python=3.6.9
 
 # Make RUN commands use the new environment
 SHELL ["conda", "run", "-n", "heptabot", "/bin/bash", "-c"]
-RUN pip install -q --upgrade pip
 
 # Install requirements
 RUN mamba install -yq -c conda-forge --file conda_requirements.txt
 RUN pip install -q -r requirements.txt
-RUN pip install -q --upgrade pip
+RUN pip install -q transformers==4.1.1
 RUN mamba install -yq jupyterlab
 
 # Set up nltk and spaCy
 RUN python -c "import nltk; nltk.download(\"punkt\")"
 RUN python -m spacy download -d en_core_web_sm-1.2.0 > /dev/null 2>&1
 RUN python -m spacy link en_core_web_sm en
+RUN pip install -q --upgrade pip
 
 # Download models
-
 RUN mkdir models
 RUN wget -q https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
 RUN tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models

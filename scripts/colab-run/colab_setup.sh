@@ -14,13 +14,14 @@ echo
 echo "Installing requirements"
 mamba install -yq -c conda-forge --file conda_requirements.txt
 pip install -q -r requirements.txt
-pip install -q --upgrade pip
+pip install -q transformers==4.1.1
 echo
 
 echo "Setting up nltk and spaCy"
 python -c 'import nltk; nltk.download("punkt")'
 python -m spacy download -d en_core_web_sm-1.2.0
 python -m spacy link en_core_web_sm en
+pip install -q --upgrade pip
 echo
 
 echo "Downloading models"
