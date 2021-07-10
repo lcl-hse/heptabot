@@ -10,10 +10,10 @@ TPU_ADDRESS = _t.get_master()
 TPU_TOPOLOGY = "2x2"
 
 MODEL_TYPE = os.environ["HPT_MODEL_TYPE"]
-MODEL_DIR = "gs://heptabot/models/{}/tpu".format(model_type)
+MODEL_DIR = "gs://heptabot/models/{}/tpu".format(MODEL_TYPE)
 model_parallelism, train_batch_size, _ = {
     "medium": (2, 64, 8),
-    "xxl": (8, 8, 1)}[model_type]
+    "xxl": (8, 8, 1)}[MODEL_TYPE]
 
 model = t5.models.MtfModel(
         model_dir=MODEL_DIR,
