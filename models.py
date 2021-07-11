@@ -221,6 +221,7 @@ def diff_to_ann(diff, classes, original_ann=None):
           _id = int(s.group(2))
           if _id > _tdict[_type]:
             _tdict[_type] = _id
+    T, A, DASH = _tdict["T"], _tdict["A"], _tdict["#"]
   else:
     T, A, DASH = 0, 0, 0
 
@@ -266,7 +267,7 @@ def diff_to_ann(diff, classes, original_ann=None):
         else:
           _, outins, _, _ = spare_spaces(None, ch)
           if pos == 0:
-            rs = re.search(r"^(\s*)([-'\w]+)", diff[1][1][0][1])
+            rs = re.search(r"^(\s*)(.*?)(?:[^-'\w]*)(?:\s|$)", diff[1][1][0][1])
             add_before = len(rs.group(1))
             pseudodel = rs.group(2)
             ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], add_before, add_before+len(pseudodel), pseudodel))
@@ -274,7 +275,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             T += 1
             DASH += 1
           else:
-            rs = re.search(r"([-'\w]+)([^-'\w\s]*)(\s*)$", diff[k-1][1][0][1])
+            rs = re.search(r"(?:\s|^)(\S*?)([^-'\w\s]*)(\s*)$", diff[k-1][1][0][1])
             pseudodel = rs.group(1)
             punct = rs.group(2)
             len_diff = len(diff[k-1][1][0][1])
