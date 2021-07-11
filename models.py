@@ -12,6 +12,7 @@ import pandas as pd
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from os import devnull
 from collections import OrderedDict
+from func_timeout import func_set_timeout, FunctionTimedOut
 from diff_match_patch import diff_match_patch
 from nltk.tokenize import sent_tokenize, word_tokenize
 from catboost import CatBoostClassifier
@@ -180,6 +181,7 @@ def batchify(text, task_type):
     return batches, delims
 
 
+@func_set_timeout(60)
 def process_batch(batch):
     global inference
     return re.sub(r"(\W|^)([Ww])ont(\W|$)", r"\1\2on't\3", re.sub(r"\n\s+", r"\n",
@@ -545,6 +547,7 @@ def diff_prettyHtml(diff, classes):
     return "".join(html)
 
 
+@func_set_timeout(30)
 def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, original_ann=None):
     if maybe_to_ann:
         origs = re.sub(r"[\n\t]", " ", text)
