@@ -1,5 +1,5 @@
 errant==2.1.0
 torch==1.5.1
 numpy==1.16.1
-catboost==0.24.1
+catboost==0.26
 sentence_transformers==0.3.6
