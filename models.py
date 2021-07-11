@@ -14,6 +14,7 @@ import tensorflow as tf
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from os import devnull
 from collections import OrderedDict
+from func_timeout import func_set_timeout, FunctionTimedOut
 from diff_match_patch import diff_match_patch
 from nltk.tokenize import sent_tokenize, word_tokenize
 from catboost import CatBoostClassifier
@@ -188,6 +189,7 @@ def batchify(text, task_type, model_batches=2):
     return feed, delims
 
 
+@func_set_timeout(60)
 def process_batch(batch):
     global predict_fn
     batch = [preprocess(t) for t in batch]
@@ -553,6 +555,7 @@ def diff_prettyHtml(diff, classes):
     return "".join(html)
 
 
+@func_set_timeout(30)
 def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, original_ann=None):
     if maybe_to_ann:
         origs = re.sub(r"[\n\t]", " ", text)

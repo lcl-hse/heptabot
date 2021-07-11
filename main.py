@@ -5,6 +5,7 @@ import secrets
 import Pyro4
 import Pyro4.util
 
+from func_timeout import FunctionTimedOut
 from flask import Flask, Markup, Response, request, stream_with_context, redirect, url_for, render_template, jsonify
 from werkzeug.exceptions import HTTPException
 
@@ -80,6 +81,11 @@ def handle_exception(e):
         error_obj["header"] = "Secret connection error has occurred."
         error_obj["str1"] = "We exchange secret tokens so that the output could be viewed only by those who submitted the text. Seems like the tokens mismatched somehow."
         error_obj["str2"] = Markup('If you think this shouldn\'t have happened, you can report the error via our <a href="https://forms.gle/RpFdgLN92L4KQ3DMA">Google Form</a>.')
+
+    elif isinstance(e, FunctionTimedOut):
+        error_obj["header"] = "Seems like your texts take too long to process."
+        error_obj["str1"] = "We set some reasonable limits for text processing time in order to maintain server resources and stable uptime."
+        error_obj["str2"] = Markup('If you think this error shouldn\'t have happened, you can report it via our <a href="https://forms.gle/RpFdgLN92L4KQ3DMA">Google Form</a>.')
 
     else:
         error_obj["header"] = "Seems like a runtime error has occurred. Here's the info:"
