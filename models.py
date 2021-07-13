@@ -395,17 +395,30 @@ def diff_from_errant(orig, corr, patch_list):
             lastc = zstr
             lasto = zstr
         I = end
-        if original:
+        ows, cws = orig[patch.o_end - 1].whitespace_, corr[patch.c_end - 1].whitespace_
+        trail = ""
+        for _o, _c in zip(ows[::-1], cws[::-1]):
+            if _o == _c:
+                trail += _o
+            else:
+                break
+        trail = trail[::-1]
+        ows = ows[:len(ows)-len(trail)] if ows[:len(ows)-len(trail)] else ""
+        cws = cws[:len(cws)-len(trail)] if cws[:len(cws)-len(trail)] else ""
+        if original or ows:
             ws = orig[patch.o_start - 1].whitespace_
-            s = "" if lasto.endswith(ws) else ws
-            lasto = s + original
+            s = ""
+            if start != end:
+                s = "" if lasto.endswith(ws) else ws
+            lasto = s + original + ows
             outlist.append((-1, lasto))
-        if correction:
+        if correction or cws:
             ws = corr[patch.c_start - 1].whitespace_
-            s = "" if lastc.endswith(ws) else ws
-            lastc = s + correction
+            s = ""
+            if patch.c_start != patch.c_end:
+                s = "" if lastc.endswith(ws) else ws
+            lastc = s + correction + cws
             outlist.append((1, lastc))
-        trail = corr[patch.c_end - 1].whitespace_
 
     if I < len(orig) - 1:
         outlist.append((0, trail + "".join(str(orig[i]) + orig[i].whitespace_ for i in range(I, len(orig)))))
