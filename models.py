@@ -250,6 +250,9 @@ def diff_to_ann(diff, classes, original_ann=None):
         if d[0] == 1 and i[0] == -1:
           d, i = i, d
         outdel, outins, add_before, add_after = spare_spaces(d[1], i[1])
+        if re.search(r"^\s*$", outdel):
+          pos += len(outdel) + add_after
+          continue
         pos += add_before
         ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
         ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
@@ -261,6 +264,9 @@ def diff_to_ann(diff, classes, original_ann=None):
         if m == -1:
           outdel, _, add_before, add_after = spare_spaces(ch, None)
           pos += add_before
+          if re.search(r"^\s*$", outdel):
+            pos += len(outdel) + add_after
+            continue
           ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
           ANNS.append("A{}\tDelete T{}".format(A+1, T+1))
           pos += len(outdel) + add_after
@@ -284,7 +290,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             len_punct = len(punct)
             add_after = len(rs.group(3))
             add_before = len_diff - len(pseudodel) - len_punct - add_after
-            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos + add_before, pos + len_diff - add_after, pseudodel + punct))
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - len_punct - add_after, pseudodel + punct))
             ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
             T += 1
             DASH += 1
