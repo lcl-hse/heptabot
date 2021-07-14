@@ -242,6 +242,9 @@ def diff_to_ann(diff, classes, original_ann=None):
         if d[0] == 1 and i[0] == -1:
           d, i = i, d
         outdel, outins, add_before, add_after = spare_spaces(d[1], i[1])
+        if re.search(r"^\s*$", outdel):
+          pos += len(outdel) + add_after
+          continue
         pos += add_before
         ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
         ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
@@ -253,6 +256,9 @@ def diff_to_ann(diff, classes, original_ann=None):
         if m == -1:
           outdel, _, add_before, add_after = spare_spaces(ch, None)
           pos += add_before
+          if re.search(r"^\s*$", outdel):
+            pos += len(outdel) + add_after
+            continue
           ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos, pos+len(outdel), outdel))
           ANNS.append("A{}\tDelete T{}".format(A+1, T+1))
           pos += len(outdel) + add_after
@@ -276,7 +282,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             len_punct = len(punct)
             add_after = len(rs.group(3))
             add_before = len_diff - len(pseudodel) - len_punct - add_after
-            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos + add_before, pos + len_diff - add_after, pseudodel + punct))
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - len_punct - add_after, pseudodel + punct))
             ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
             T += 1
             DASH += 1
@@ -381,17 +387,30 @@ def diff_from_errant(orig, corr, patch_list):
             lastc = zstr
             lasto = zstr
         I = end
-        if original:
+        ows, cws = orig[patch.o_end - 1].whitespace_, corr[patch.c_end - 1].whitespace_
+        trail = ""
+        for _o, _c in zip(ows[::-1], cws[::-1]):
+            if _o == _c:
+                trail += _o
+            else:
+                break
+        trail = trail[::-1]
+        ows = ows[:len(ows)-len(trail)] if ows[:len(ows)-len(trail)] else ""
+        cws = cws[:len(cws)-len(trail)] if cws[:len(cws)-len(trail)] else ""
+        if original or ows:
             ws = orig[patch.o_start - 1].whitespace_
-            s = "" if lasto.endswith(ws) else ws
-            lasto = s + original
+            s = ""
+            if start != end:
+                s = "" if lasto.endswith(ws) else ws
+            lasto = s + original + ows
             outlist.append((-1, lasto))
-        if correction:
+        if correction or cws:
             ws = corr[patch.c_start - 1].whitespace_
-            s = "" if lastc.endswith(ws) else ws
-            lastc = s + correction
+            s = ""
+            if patch.c_start != patch.c_end:
+                s = "" if lastc.endswith(ws) else ws
+            lastc = s + correction + cws
             outlist.append((1, lastc))
-        trail = corr[patch.c_end - 1].whitespace_
 
     if I < len(orig) - 1:
         outlist.append((0, trail + "".join(str(orig[i]) + orig[i].whitespace_ for i in range(I, len(orig)))))
