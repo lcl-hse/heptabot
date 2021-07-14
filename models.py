@@ -380,7 +380,7 @@ def diff_from_errant(origs, corrs, patch_list):
   trail = ""
   prevend = 0
 
-  for start, end, cstart, cend in [(vars(l)["o_start"], vars(l)["o_end"], vars(l)["c_start"], vars(l)["c_end"]) for l in patch_list]:
+  for start, end, cstart, cend in [(p.o_start, p.o_end, p.c_start, p.c_end) for p in patch_list]:
     _keep = trail + "".join(t.text + t.whitespace_ for t in origs[prevend:start])
     prevend = end
     _del = "".join(t.text + t.whitespace_ for t in origs[start:end])
@@ -388,7 +388,7 @@ def diff_from_errant(origs, corrs, patch_list):
     if start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
       _keep = _keep[:-len(origs[start-1].whitespace_)]
       trail = origs[end-1].whitespace_
-    elif _del and _ins and origs[end-1].whitespace_ == corrs[end-1].whitespace_ and len(origs[end-1].whitespace_):
+    elif _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
       trail = origs[end-1].whitespace_
       _del = _del[:-len(trail)]
       _ins = _ins[:-len(trail)]
@@ -534,18 +534,20 @@ def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, ori
         origs = re.sub(r"[\n\t]", " ", text)
     else:
         origs = re.sub(r"(\s)+", r"\g<1>", text)
-    corrs = merge_results(response_obj, delims)
+    corrs = merge_results(response_obj, delims).strip()
     if maybe_to_ann:
         corrs = re.sub(r"[\n\t]", " ", corrs)
     if task_type == "correction":
         diff = diff_from_errant(*errant_process(origs, corrs, annotator))
+        if not diff:
+          diff = [(0, origs)]
         diff, errlist = merge_diff(diff)
         errors = [e[0] for e in errlist]
         corrections = [e[1] for e in errlist]
         classes = predict_error_class(errors=errors, corrections=corrections,
                                       model=classifier, sentence_embedder=emb_model,
                                       tokenizer=word_tokenize)
-        diff = groupify_diff(despacify_diff(diff))
+        diff = groupify_diff(diff)
         if maybe_to_ann:
             res = diff_to_ann(diff, classes, original_ann=original_ann)
         else:
