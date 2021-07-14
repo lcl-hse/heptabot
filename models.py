@@ -242,7 +242,7 @@ def diff_to_ann(diff, classes, original_ann=None):
         if d[0] == 1 and i[0] == -1:
           d, i = i, d
         outdel, outins, add_before, add_after = spare_spaces(d[1], i[1])
-        if re.search(r"^\s*$", outdel):
+        if re.search(r"^\s*$", outdel) and re.search(r"^\s*$", outins):
           pos += len(outdel) + add_after
           continue
         pos += add_before
@@ -266,6 +266,8 @@ def diff_to_ann(diff, classes, original_ann=None):
           A += 1
         else:
           _, outins, _, _ = spare_spaces(None, ch)
+          if re.search(r"^\s*$", outins):
+            continue
           if pos == 0:
             rs = re.search(r"^(\s*)(.*?)(?:[^-'\w]*)(?:\s|$)", diff[1][1][0][1])
             add_before = len(rs.group(1))
@@ -282,7 +284,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             len_punct = len(punct)
             add_after = len(rs.group(3))
             add_before = len_diff - len(pseudodel) - len_punct - add_after
-            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - len_punct - add_after, pseudodel + punct))
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - add_after, pseudodel + punct))
             ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
             T += 1
             DASH += 1
@@ -365,57 +367,32 @@ def predict_error_class(errors, corrections, model, sentence_embedder, tokenizer
     return preds
 
 
-def diff_from_errant(orig, corr, patch_list):
-    """
-    Applies correction to an individual text entry
-    :param text: string containing original uncorrected text
-    :param patch_list: list containing patches in [start, end, correction] notation
-    :return: original text (str), corrected text (str), number of corrections (int)
-    """
-    I = 0
-    outlist = []
-    trail = ""
-    lastc, lasto = "", ""
+def diff_from_errant(origs, corrs, patch_list):
+  res = []
+  trail = ""
+  prevend = 0
 
-    for patch in patch_list:
-        start, end, original, correction = patch.o_start, patch.o_end, patch.o_str, patch.c_str
-        if start - I:
-            zstr = trail + "".join(str(orig[i]) + orig[i].whitespace_ for i in range(I, start))
-            if orig[start - 1].whitespace_ != corr[patch.c_start - 1].whitespace_:
-                zstr = zstr[:len(zstr) - len(orig[start - 1].whitespace_)]
-            outlist.append((0, zstr))
-            lastc = zstr
-            lasto = zstr
-        I = end
-        ows, cws = orig[patch.o_end - 1].whitespace_, corr[patch.c_end - 1].whitespace_
-        trail = ""
-        for _o, _c in zip(ows[::-1], cws[::-1]):
-            if _o == _c:
-                trail += _o
-            else:
-                break
-        trail = trail[::-1]
-        ows = ows[:len(ows)-len(trail)] if ows[:len(ows)-len(trail)] else ""
-        cws = cws[:len(cws)-len(trail)] if cws[:len(cws)-len(trail)] else ""
-        if original or ows:
-            ws = orig[patch.o_start - 1].whitespace_
-            s = ""
-            if start != end:
-                s = "" if lasto.endswith(ws) else ws
-            lasto = s + original + ows
-            outlist.append((-1, lasto))
-        if correction or cws:
-            ws = corr[patch.c_start - 1].whitespace_
-            s = ""
-            if patch.c_start != patch.c_end:
-                s = "" if lastc.endswith(ws) else ws
-            lastc = s + correction + cws
-            outlist.append((1, lastc))
-
-    if I < len(orig) - 1:
-        outlist.append((0, trail + "".join(str(orig[i]) + orig[i].whitespace_ for i in range(I, len(orig)))))
-
-    return outlist
+  for start, end, cstart, cend in [(p.o_start, p.o_end, p.c_start, p.c_end) for p in patch_list]:
+    _keep = trail + "".join(t.text + t.whitespace_ for t in origs[prevend:start])
+    prevend = end
+    _del = "".join(t.text + t.whitespace_ for t in origs[start:end])
+    _ins = "".join(t.text + t.whitespace_ for t in corrs[cstart:cend])
+    if start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
+      _keep = _keep[:-len(origs[start-1].whitespace_)]
+      trail = origs[end-1].whitespace_
+    elif _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
+      trail = origs[end-1].whitespace_
+      _del = _del[:-len(trail)]
+      _ins = _ins[:-len(trail)]
+    else:
+      trail = ""
+    if _keep:
+      res += [(0, _keep)]
+    if _del:
+      res += [(-1, _del)]
+    if _ins:
+      res += [(1, _ins)]
+  return res
 
 
 def merge_diff(difflist):
@@ -430,8 +407,10 @@ def merge_diff(difflist):
     for t, dstr in difflist:
         if t == 0:
             if prev1:
-                outlist.append(tuple(e))
-                outlist.append(tuple(c))
+                if e[1]:
+                    outlist.append(tuple(e))
+                if c[1]:
+                    outlist.append(tuple(c))
                 errlist.append([e[1], c[1]])
             z[1] += dstr
             if not prev0:
@@ -452,38 +431,13 @@ def merge_diff(difflist):
     if prev0:
         outlist.append(tuple(z))
     if prev1:
-        outlist.append(tuple(e))
-        outlist.append(tuple(c))
+        if e[1]:
+            outlist.append(tuple(e))
+        if c[1]:
+           outlist.append(tuple(c))
         errlist.append([e[1], c[1]])
 
     return outlist, errlist
-
-
-def despacify_diff(diff):
-    diff = [list(t) for t in diff if t[1]]
-    for i, elem in enumerate(diff):
-        check = False
-        t, _ = elem
-        if i:
-            if t == 1 and diff[i - 1][0] == 0:
-                check = True
-        if i != len(diff) - 1:
-            if t == -1 and diff[i + 1][0] == 0:
-                check = True
-        if check:
-            if i != len(diff) - 1:
-                c = re.search(r"^( +)", diff[i + 1][1])
-                if c:
-                    diff[i][1] = diff[i][1] + diff[i + 1][1][:c.span(1)[1]]
-                    diff[i + 1][1] = diff[i + 1][1][c.span(1)[1]:]
-                    continue
-            if i:
-                c = re.search(r"( +)$", diff[i - 1][1])
-                if c:
-                    diff[i][1] = diff[i - 1][1][c.span(1)[0]:] + diff[i][1]
-                    diff[i - 1][1] = diff[i - 1][1][:c.span(1)[0]]
-                    continue
-    return [tuple(t) for t in diff]
 
 
 def groupify_diff(diff):
@@ -572,18 +526,20 @@ def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, ori
         origs = re.sub(r"[\n\t]", " ", text)
     else:
         origs = re.sub(r"(\s)+", r"\g<1>", text)
-    corrs = merge_results(response_obj, delims)
+    corrs = merge_results(response_obj, delims).strip()
     if maybe_to_ann:
         corrs = re.sub(r"[\n\t]", " ", corrs)
     if task_type == "correction":
         diff = diff_from_errant(*errant_process(origs, corrs, annotator))
+        if not diff:
+          diff = [(0, origs)]
         diff, errlist = merge_diff(diff)
         errors = [e[0] for e in errlist]
         corrections = [e[1] for e in errlist]
         classes = predict_error_class(errors=errors, corrections=corrections,
                                       model=classifier, sentence_embedder=emb_model,
                                       tokenizer=word_tokenize)
-        diff = groupify_diff(despacify_diff(diff))
+        diff = groupify_diff(diff)
         if maybe_to_ann:
             res = diff_to_ann(diff, classes, original_ann=original_ann)
         else:
