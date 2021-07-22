@@ -415,8 +415,7 @@ def merge_diff(difflist):
     e = [-1, ""]
     c = [1, ""]
 
-    for i, d in enumerate(difflist):
-        t, dstr = d
+    for t, dstr in difflist:
         if t == 0:
             if prev1:
                 # Merge edits separated only by spaces
