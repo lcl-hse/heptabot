@@ -281,7 +281,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             add_before = len(rs.group(1))
             pseudodel = rs.group(2)
             ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], add_before, add_before+len(pseudodel), pseudodel))
-            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, re.search(r"^(\s*)(.*?\s*)$", ch).group(2) + pseudodel))
             T += 1
             DASH += 1
           else:
@@ -293,7 +293,7 @@ def diff_to_ann(diff, classes, original_ann=None):
             add_after = len(rs.group(3))
             add_before = len_diff - len(pseudodel) - len_punct - add_after
             ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - add_after, pseudodel + punct))
-            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, outins))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, pseudodel + punct + rs.group(3) + outins))
             T += 1
             DASH += 1
       _cid += 1
