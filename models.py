@@ -377,10 +377,10 @@ def diff_from_errant(origs, corrs, patch_list):
     prevend = end
     _del = "".join(t.text + t.whitespace_ for t in origs[start:end])
     _ins = "".join(t.text + t.whitespace_ for t in corrs[cstart:cend])
-    if start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
+    if end - start and start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
       _keep = _keep[:-len(origs[start-1].whitespace_)]
-      trail = origs[end-1].whitespace_
-    elif _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
+      _del = origs[start-1].whitespace_ + _del
+    if _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
       trail = origs[end-1].whitespace_
       _del = _del[:-len(trail)]
       _ins = _ins[:-len(trail)]
@@ -392,6 +392,9 @@ def diff_from_errant(origs, corrs, patch_list):
       res += [(-1, _del)]
     if _ins:
       res += [(1, _ins)]
+  leftover = trail + "".join(t.text + t.whitespace_ for t in origs[prevend:])
+  if leftover:
+    res += [(0, leftover)]
   return res
 
 
@@ -407,11 +410,20 @@ def merge_diff(difflist):
     for t, dstr in difflist:
         if t == 0:
             if prev1:
-                if e[1]:
-                    outlist.append(tuple(e))
-                if c[1]:
-                    outlist.append(tuple(c))
-                errlist.append([e[1], c[1]])
+                # Merge edits separated only by spaces
+                if re.search(r"^\s+$", dstr):
+                    if e != [-1, ""]:
+                        e[1] += dstr
+                    if c != [1, ""]:
+                        c[1] += dstr
+                    if e[1] or c[1]:
+                        continue
+                else:
+                    if e[1]:
+                        outlist.append(tuple(e))
+                    if c[1]:
+                        outlist.append(tuple(c))
+                    errlist.append([e[1], c[1]])
             z[1] += dstr
             if not prev0:
                 prev0, prev1 = True, False
