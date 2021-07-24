@@ -385,7 +385,7 @@ def diff_from_errant(origs, corrs, patch_list):
     prevend = end
     _del = "".join(t.text + t.whitespace_ for t in origs[start:end])
     _ins = "".join(t.text + t.whitespace_ for t in corrs[cstart:cend])
-    if _keep and end - start and start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
+    if _keep and start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
       _keep = _keep[:-len(origs[start-1].whitespace_)]
       _del = origs[start-1].whitespace_ + _del
     if _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
