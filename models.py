@@ -378,14 +378,14 @@ def diff_from_errant(origs, corrs, patch_list):
     if _keep and start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
       _keep = _keep[:-len(origs[start-1].whitespace_)]
       _del = origs[start-1].whitespace_ + _del
+    if _keep and cstart and re.search(r"(\s*)$", _keep).group(1) != corrs[cstart-1].whitespace_ and re.search(r"^(\s*)", _del).group(1) != corrs[cstart-1].whitespace_:
+      _ins = corrs[cstart-1].whitespace_ + _ins
     if _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
       trail = origs[end-1].whitespace_
       _del = _del[:-len(trail)]
       _ins = _ins[:-len(trail)]
     else:
       trail = ""
-    if _keep and cstart and re.search(r"(\s*)$", _keep).group(1) != corrs[cstart-1].whitespace_ and re.search(r"^(\s*)", _del).group(1) != corrs[cstart-1].whitespace_:
-      _ins = corrs[cstart-1].whitespace_ + _ins
     if _keep:
       res += [(0, _keep)]
     if _del:
