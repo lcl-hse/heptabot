@@ -280,12 +280,10 @@ def diff_to_ann(diff, classes, original_ann=None):
             rs = re.search(r"(?:\s|^)(\S*?)([^-'\w\s]*)(\s*)$", diff[k-1][1][0][1])
             pseudodel = rs.group(1)
             punct = rs.group(2)
-            len_diff = len(diff[k-1][1][0][1])
             len_punct = len(punct)
             add_after = len(rs.group(3))
-            add_before = len_diff - len(pseudodel) - len_punct - add_after
             ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - add_after, pseudodel + punct))
-            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, pseudodel + punct + rs.group(3) + outins))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, pseudodel + punct + " " * max(len(rs.group(3)), len(re.search(r"^(\s*)", ch).group(1))) + outins))
             T += 1
             DASH += 1
       _cid += 1
@@ -386,6 +384,8 @@ def diff_from_errant(origs, corrs, patch_list):
       _ins = _ins[:-len(trail)]
     else:
       trail = ""
+    if re.search(r"(\s*)$", _keep).group(1) != corrs[cstart-1].whitespace_ and re.search(r"^(\s*)", _del).group(1) != corrs[cstart-1].whitespace_:
+      _ins = corrs[cstart-1].whitespace_ + _ins
     if _keep:
       res += [(0, _keep)]
     if _del:
@@ -412,12 +412,9 @@ def merge_diff(difflist):
             if prev1:
                 # Merge edits separated only by spaces
                 if re.search(r"^\s+$", dstr):
-                    if e != [-1, ""]:
-                        e[1] += dstr
-                    if c != [1, ""]:
-                        c[1] += dstr
-                    if e[1] or c[1]:
-                        continue
+                    e[1] += dstr
+                    c[1] += dstr
+                    continue
                 else:
                     if e[1]:
                         outlist.append(tuple(e))
