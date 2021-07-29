@@ -28,11 +28,13 @@ echo "Downloading models"
 mkdir models
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
 tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+rm ./models/distilbert_stsb_model.tar.gz
 mkdir ./models/classifier
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/classifier/err_type_classifier.cbm -P ./models/classifier
 tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/tiny/cpu/t5_tiny_model.tar.gz -P ./models
 tar -xzf ./models/t5_tiny_model.tar.gz -C ./models
+rm ./models/t5_tiny_model.tar.gz
 echo
 
 echo "heptabot is ready to use!"
