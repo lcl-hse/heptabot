@@ -27,6 +27,7 @@ echo "Downloading models"
 mkdir ./models
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
 tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+rm ./models/distilbert_stsb_model.tar.gz
 mkdir ./models/classifier
 wget -q --show-progress https://storage.googleapis.com/heptabot/models/classifier/err_type_classifier.cbm -P ./models/classifier
 mkdir ./models/t5-tokenizer

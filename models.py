@@ -546,6 +546,7 @@ def result_to_div(text, response_obj, delims, task_type, maybe_to_ann=False, ori
     corrs = merge_results(response_obj, delims).strip()
     if maybe_to_ann:
         corrs = re.sub(r"[\n\t]", " ", corrs)
+    res = corrs
     if task_type == "correction":
         diff = diff_from_errant(*errant_process(origs, corrs, annotator))
         if not diff:
