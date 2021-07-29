@@ -20,7 +20,12 @@ else
   source activate heptabot
   python batchify_input.py
   source deactivate 1>/dev/null 2>&1
-  bash tpu_run.sh 1>/dev/null 2>&1
+  if [ "$HPT_MODEL_TYPE" == "xxl" ]
+  then
+    python tpu_model_run.py 1>/dev/null 2>&1
+  else
+    bash tpu_run.sh 1>/dev/null 2>&1
+  fi
   source activate heptabot
   python process_output.py
 fi
@@ -89,7 +94,12 @@ else
   source activate heptabot
   python batchify_input.py
   source deactivate 1>/dev/null 2>&1
-  bash tpu_run.sh 1>/dev/null 2>&1
+  if [ "$HPT_MODEL_TYPE" == "xxl" ]
+  then
+    python tpu_model_run.py 1>/dev/null 2>&1
+  else
+    bash tpu_run.sh 1>/dev/null 2>&1
+  fi
   source activate heptabot
   python process_output.py
 fi
@@ -113,7 +123,10 @@ cd ../
 echo
 echo "** To get BEA scores, please upload our output to the official scoring system. **"
 echo "** The system is located at https://competitions.codalab.org/competitions/20229#participate. **"
-echo "** Our generated output will start downloading shortly. **"
+if [ "$HPT_MODEL_TYPE" != "xxl" ]
+then
+  echo "** Our generated output will start downloading shortly. **"
+fi
 cp bea.res ABCN.bea19.test.corr
 bea_zip_name="bea_test_heptabot_"$HPT_MODEL_TYPE"_"$MODEL_PLACE".zip"
 zip -q $bea_zip_name ABCN.bea19.test.corr
