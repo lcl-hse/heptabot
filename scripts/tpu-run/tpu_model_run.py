@@ -16,14 +16,14 @@ model_parallelism, train_batch_size, _ = {
     "xxl": (8, 8, 1)}[MODEL_TYPE]
 
 model = t5.models.MtfModel(
-        model_dir=MODEL_DIR,
-        tpu=TPU_ADDRESS,
-        tpu_topology=TPU_TOPOLOGY,
-        model_parallelism=model_parallelism,
-        batch_size=train_batch_size,
-        sequence_length={"inputs": 512, "targets": 512},
-        learning_rate_schedule=0.0025,
-        iterations_per_loop=100,
+    model_dir=MODEL_DIR,
+    tpu=TPU_ADDRESS,
+    tpu_topology=TPU_TOPOLOGY,
+    model_parallelism=model_parallelism,
+    batch_size=train_batch_size,
+    sequence_length={"inputs": 512, "targets": 512},
+    learning_rate_schedule=0.0025,
+    iterations_per_loop=100,
 )
 
 _tname = {
@@ -36,4 +36,7 @@ _tname = {
 model.predict(
     input_file="./raw/raw_input.txt",
     output_file="./raw/raw_output.txt",
-    checkpoint_steps=1014000)
+    checkpoint_steps=[1014000],
+    beam_size=2,
+    temperature=0.0
+)

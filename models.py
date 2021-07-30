@@ -1,10 +1,7 @@
 import re
 import os
-import json
 import errant
-import torch
 import spacy
-import tensorflow_text
 import Pyro4
 
 import numpy as np
@@ -43,7 +40,7 @@ def suppress_stdout_stderr():
     """A context manager that redirects stdout and stderr to devnull"""
     with open(devnull, 'w') as fnull:
         with redirect_stderr(fnull) as err, redirect_stdout(fnull) as out:
-            yield (err, out)
+            yield err, out
 
 
 dmp = diff_match_patch()
@@ -280,8 +277,10 @@ def diff_to_ann(diff, classes, original_ann=None):
             rs = re.search(r"^(\s*)(.*?)(?:[^-'\w]*)(?:\s|$)", diff[1][1][0][1])
             add_before = len(rs.group(1))
             pseudodel = rs.group(2)
-            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], add_before, add_before+len(pseudodel), pseudodel))
-            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, re.search(r"^(\s*)(.*?\s*)$", ch).group(2) + pseudodel))
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], add_before,
+                                                   add_before+len(pseudodel), pseudodel))
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1,
+                                                             re.search(r"^(\s*)(.*?\s*)$", ch).group(2) + pseudodel))
             T += 1
             DASH += 1
           else:
@@ -290,8 +289,11 @@ def diff_to_ann(diff, classes, original_ann=None):
             punct = rs.group(2)
             len_punct = len(punct)
             add_after = len(rs.group(3))
-            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]], pos - len(pseudodel) - len_punct - add_after, pos - add_after, pseudodel + punct))
-            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, pseudodel + punct + " " * max(len(rs.group(3)), len(re.search(r"^(\s*)", ch).group(1))) + outins))
+            ANNS.append("T{}\t{} {} {}\t{}".format(T+1, class_dict[classes[_cid]],
+                                                   pos - len(pseudodel) - len_punct - add_after,
+                                                   pos - add_after, pseudodel + punct))
+            _ins = pseudodel + punct + " " * max(len(rs.group(3)), len(re.search(r"^(\s*)", ch).group(1))) + outins
+            ANNS.append("#{}\tAnnotatorNotes T{}\t{}".format(DASH+1, T+1, _ins))
             T += 1
             DASH += 1
       _cid += 1
@@ -386,7 +388,8 @@ def diff_from_errant(origs, corrs, patch_list):
     if _keep and start and cstart and len(corrs[cstart-1].whitespace_) < len(origs[start-1].whitespace_):
       _keep = _keep[:-len(origs[start-1].whitespace_)]
       _del = origs[start-1].whitespace_ + _del
-    if _keep and cstart and re.search(r"(\s*)$", _keep).group(1) != corrs[cstart-1].whitespace_ and re.search(r"^(\s*)", _del).group(1) != corrs[cstart-1].whitespace_:
+    if _keep and cstart and re.search(r"(\s*)$", _keep).group(1) != corrs[cstart-1].whitespace_ \
+            and re.search(r"^(\s*)", _del).group(1) != corrs[cstart-1].whitespace_:
       _ins = corrs[cstart-1].whitespace_ + _ins
     if _del and _ins and origs[end-1].whitespace_ == corrs[cend-1].whitespace_ and len(origs[end-1].whitespace_):
       trail = origs[end-1].whitespace_
