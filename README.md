@@ -9,13 +9,13 @@ Powered by [Text-To-Text Transfer Transformer](https://github.com/google-researc
 ## How to use
 **Select a convenient way of using `heptabot` depending on your needs:**
 * If you want to **quickly test basic `heptabot` with a few texts** or **see our Web version**, use [Web demo](https://lcl-correct.it/).
-* If you want to **test `tiny`, CPU version of heptabot**, use [`tiny` version in Colab CPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/pytorch/notebooks/Run_tiny_model_on_Colab_CPU.ipynb).
-* If you want to **process a few texts with a more powerful `medium` version**, use [`medium` version in Colab GPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/tensorflow/notebooks/Run_medium_model_on_Colab_GPU.ipynb).
-* If you want to **process a large amount (hundreds) of texts**, use [`medium` version in Colab TPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/tensorflow/notebooks/Run_medium_model_on_Colab_TPU.ipynb).
+* If you want to **test `tiny`, CPU version of heptabot**, use [`tiny` version in Colab CPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/cpu/notebooks/Run_tiny_model_on_Colab_CPU.ipynb).
+* If you want to **process a few texts with a more powerful `medium` version**, use [`medium` version in Colab GPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/gpu-tpu/notebooks/Run_medium_model_on_Colab_GPU.ipynb).
+* If you want to **process a large amount (hundreds) of texts**, use [`medium` version in Colab TPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/gpu-tpu/notebooks/Run_medium_model_on_Colab_TPU.ipynb).
 * If you want to **use our most powerful version**, use [`xxl` version in Kaggle TPU environment](https://www.kaggle.com/isikus/run-heptabot-xxl-model-on-tpu)
-* If you want to **install our CPU (`tiny`) version/clone our Web demo**, pull our [`tiny-cpu` Docker image](https://hub.docker.com/r/lclhse/heptabot/) (our legacy [Install](https://github.com/lcl-hse/heptabot/blob/pytorch/legacy/Install.ipynb) procedure is deprecated).
-* If you want to **install our GPU (`medium`) version/set up a Web version of `medium` model** (and you have a GPU), pull our [`medium-gpu` Docker image](https://hub.docker.com/r/lclhse/heptabot/), or follow our [Install](https://github.com/lcl-hse/heptabot/blob/tensorflow/notebooks/Install.ipynb) procedure.
-* If you want to **reproduce our scores**, refer to the **Measure performance** section at the end of each corresponding notebook ([`tiny`](https://colab.research.google.com/github/lcl-hse/heptabot/blob/pytorch/notebooks/Run_tiny_model_on_Colab_CPU.ipynb#scrollTo=HH35ksIc5qj6), [`medium`](https://colab.research.google.com/github/lcl-hse/heptabot/blob/tensorflow/notebooks/Run_medium_model_on_Colab_GPU.ipynb#scrollTo=HH35ksIc5qj6), [`xxl`](https://www.kaggle.com/isikus/run-heptabot-xxl-model-on-tpu?scriptVersionId=69333047&cellId=35)),
+* If you want to **install our CPU (`tiny`) version/clone our Web demo**, pull our [`tiny-cpu` Docker image](https://hub.docker.com/r/lclhse/heptabot/) (our legacy [Install](https://github.com/lcl-hse/heptabot/blob/cpu/legacy/Install.ipynb) procedure is deprecated).
+* If you want to **install our GPU (`medium`) version/set up a Web version of `medium` model** (and you have a GPU), pull our [`medium-gpu` Docker image](https://hub.docker.com/r/lclhse/heptabot/), or follow our [Install](https://github.com/lcl-hse/heptabot/blob/gpu-tpu/notebooks/Install.ipynb) procedure.
+* If you want to **reproduce our scores**, refer to the **Measure performance** section at the end of each corresponding notebook ([`tiny`](https://colab.research.google.com/github/lcl-hse/heptabot/blob/cpu/notebooks/Run_tiny_model_on_Colab_CPU.ipynb#scrollTo=HH35ksIc5qj6), [`medium`](https://colab.research.google.com/github/lcl-hse/heptabot/blob/gpu-tpu/notebooks/Run_medium_model_on_Colab_GPU.ipynb#scrollTo=HH35ksIc5qj6), [`xxl`](https://www.kaggle.com/isikus/run-heptabot-xxl-model-on-tpu?scriptVersionId=69333047&cellId=35)),
 
 ## Performance
 Here's how `heptabot` scores against state-of-the-art systems on some of the most common Grammar Error Correction tasks:
@@ -37,7 +37,7 @@ The performance of current `heptabot` *Web* version measures as follows:
 
 * **Q: Why no CPU version of `medium` model, GPU version of `tiny` model etc.?**
 * A: There is a number of reasons.
-  - It is technically possible to run our `medium` version on CPU: you may, for example, change `FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04` to `FROM ubuntu:18.04` at the beginning of the [Dockerfile](https://github.com/lcl-hse/heptabot/blob/tensorflow/Dockerfile) to get a working environment with medium version on CPU architecture. However, running time is inadequately slow: in our tests, processing 1 file took somewhere between 1m30s and 5m. As such, we do not support this version.
+  - It is technically possible to run our `medium` version on CPU: you may, for example, change `FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04` to `FROM ubuntu:18.04` at the beginning of the [Dockerfile](https://github.com/lcl-hse/heptabot/blob/gpu-tpu/Dockerfile) to get a working environment with medium version on CPU architecture. However, running time is inadequately slow: in our tests, processing 1 file took somewhere between 1m30s and 5m. As such, we do not support this version.
   - The core of our `tiny` version is a distilled `t5-small` model, which is, more importantly, quantized. Quantization is a CPU-specific technique, so quantized models cannot run on other architectures than CPUs. Hence, no GPU or TPU versions for `tiny`.
   - Likewise, our `xxl` version employs a fine-tuned version of `t5-xxl` checkpoint, which is just too big for either CPU of GPU hosts (it is, in fact, too big even for Colab's free `v2-8` TPU tier, so we have to run it on Kaggle's `v3-8` TPUs).
 
@@ -54,4 +54,4 @@ The performance of current `heptabot` *Web* version measures as follows:
 * A: Following a [fine example](https://youtu.be/8YUWDrLazCg), in this case, "FAQ" stands for "Fully Anticipated Questions".
 
 ## Reproduce
-Feel free to reproduce our research: to do so, follow the notebooks from the [retrain](https://github.com/lcl-hse/heptabot/blob/pytorch/retrain/) folder. Please note that you have to get access to some of the datasets we used before obtaining them, so this portion of code is omitted.
+Feel free to reproduce our research: to do so, follow the notebooks from the [retrain](https://github.com/lcl-hse/heptabot/blob/cpu/retrain/) folder. Please note that you have to get access to some of the datasets we used before obtaining them, so this portion of code is omitted.
