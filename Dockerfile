@@ -39,10 +39,10 @@ RUN set -xe && \
     git \
     libssl-dev \
     locales \
-	tar \
-	unzip \
+    tar \
+    unzip \
     wget \ 
-	zip && \
+    zip && \
     apt-get clean && \
     apt-get autoremove
 
@@ -83,6 +83,13 @@ RUN set -xe && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean --all -f -y
 
+# Fix locales once again, set heptabot to run on CPU
+RUN apt-get -qq update --fix-missing && apt-get -qq install locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV MODEL_PLACE cpu
+
 # Copy repo files to working directory and mark it as such
 COPY . /root
 WORKDIR /root
@@ -101,7 +108,7 @@ RUN mamba install -yq jupyterlab
 
 # Set up nltk and spaCy
 RUN python -c "import nltk; nltk.download(\"punkt\")"
-RUN python -m spacy download -d en_core_web_sm-1.2.0 > /dev/null 2>&1
+RUN python -m spacy download -d en_core_web_sm-1.2.0 1>/dev/null 2>&1
 RUN python -m spacy link en_core_web_sm en
 RUN pip install -q --upgrade pip
 
@@ -109,13 +116,23 @@ RUN pip install -q --upgrade pip
 RUN mkdir models
 RUN wget -q https://storage.googleapis.com/heptabot/models/external/distilbert_stsb_model.tar.gz -P ./models
 RUN tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
+RUN rm ./models/distilbert_stsb_model.tar.gz
 RUN mkdir ./models/classifier
 RUN wget -q https://storage.googleapis.com/heptabot/models/classifier/err_type_classifier.cbm -P ./models/classifier
-RUN tar -xzf ./models/distilbert_stsb_model.tar.gz -C ./models
 RUN wget -q https://storage.googleapis.com/heptabot/models/tiny/cpu/t5_tiny_model.tar.gz -P ./models
 RUN tar -xzf ./models/t5_tiny_model.tar.gz -C ./models
+RUN rm ./models/t5_tiny_model.tar.gz
+RUN chmod +x start.sh
 
+# Set Flask for serving
+EXPOSE 5000
+
+# Move the Docker notebook to main directory
+RUN mv ./notebooks/Run_tiny_model_from_Docker_image.ipynb .
+RUN rm -rf notebooks
+
+# Remove redundant lists
 RUN rm -rf /var/lib/apt/lists/* /tmp/*
 
 SHELL ["/bin/sh", "-c"]
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
