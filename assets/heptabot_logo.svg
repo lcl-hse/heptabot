@@ -36,17 +36,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1280"
-     inkscape:window-height="961"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
      id="namedview30"
      showgrid="false"
      inkscape:zoom="0.71807838"
      inkscape:cx="424.16325"
      inkscape:cy="231.91779"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="text24" />
+     inkscape:current-layer="svg28" />
   <defs
      id="defs14">
     <clipPath
@@ -86,6 +86,14 @@
          id="rect11" />
     </clipPath>
   </defs>
+  <rect
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.98808074;stroke-opacity:1"
+     id="rect4570"
+     width="790"
+     height="250"
+     x="0"
+     y="0"
+     inkscape:label="bg" />
   <g
      clip-path="url(#clip0)"
      transform="translate(-265.4241,-235.0003)"
