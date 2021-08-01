@@ -39,6 +39,7 @@ RUN set -xe && \
     git \
     libssl-dev \
     locales \
+    lsof \
     tar \
     unzip \
     wget \ 
