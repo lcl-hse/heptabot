@@ -2,6 +2,7 @@ import re
 import os
 import errant
 import spacy
+import tensorflow_text
 import Pyro4
 
 import numpy as np
@@ -42,6 +43,9 @@ def suppress_stdout_stderr():
         with redirect_stderr(fnull) as err, redirect_stdout(fnull) as out:
             yield err, out
 
+if os.environ.get("MODEL_PLACE") == "gpu":
+    physical_devices = tf.config.list_physical_devices('GPU') 
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 dmp = diff_match_patch()
 nlp = spacy.load("en")
