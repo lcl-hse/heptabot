@@ -9,7 +9,7 @@ Powered by [Text-To-Text Transfer Transformer](https://github.com/google-researc
 <p align="center"> <i>An example of text correction</i> </p>
 
 ## How to use
-**Select a convenient way of using `heptabot` depending on your needs:**
+**Choose a convenient way of using `heptabot` depending on your needs:**
 * If you want to **quickly test basic `heptabot` with a few texts** or **see our Web version**, use [Web demo](https://lcl-correct.it/).
 * If you want to **test `tiny`, CPU version of heptabot**, use [`tiny` version in Colab CPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/cpu/notebooks/Run_tiny_model_on_Colab_CPU.ipynb).
 * If you want to **process a few texts with a more powerful `medium` version**, use [`medium` version in Colab GPU environment](https://colab.research.google.com/github/lcl-hse/heptabot/blob/gpu-tpu/notebooks/Run_medium_model_on_Colab_GPU.ipynb).
