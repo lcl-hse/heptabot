@@ -1,4 +1,4 @@
-TPU_IP=$(python -c "from tensorflow.distribute.cluster_resolver import TPUClusterResolver as tpu; t = tpu(); print(t.cluster_spec().as_dict()['worker'][0])")
+TPU_IP=$(source activate heptabot; python -c "from tensorflow.distribute.cluster_resolver import TPUClusterResolver as tpu; t = tpu(); print(t.cluster_spec().as_dict()['worker'][0])")
 TPU_NAME="grpc://"$TPU_IP
 
 DIR=$(python -c "import os; print(os.path.realpath('.'))")
